@@ -5,10 +5,11 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.text.Font?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="622.0" prefWidth="924.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ruoyi.statistics_computer.SampleController">
    <children>
@@ -34,15 +35,35 @@
                   <Insets left="10.0" top="20.0" />
                </HBox.margin>
             </Button>
+            <Button mnemonicParsing="false" onAction="#saveDatafromOutput" prefHeight="29.0" prefWidth="114.0" text="AI文本一键输入">
+               <HBox.margin>
+                  <Insets left="10.0" top="20.0" />
+               </HBox.margin>
+            </Button>
          </children>
       </HBox>
-      <TableView fx:id="table" prefHeight="524.0" prefWidth="1024.0">
-        <columns>
-          <TableColumn fx:id="id" prefWidth="75.0" text="序号" />
-          <TableColumn fx:id="value" prefWidth="143.33338165283203" text="数据" />
-            <TableColumn fx:id="sortedValue" minWidth="7.33331298828125" prefWidth="155.99998474121094" text="排序值" />
-        </columns>
-      </TableView>
-      <HBox prefHeight="97.0" prefWidth="1024.0" />
+      <HBox prefHeight="523.0" prefWidth="924.0">
+         <children>
+            <TableView fx:id="table" prefHeight="523.0" prefWidth="555.0">
+              <columns>
+                <TableColumn fx:id="id" prefWidth="75.0" text="序号" />
+                <TableColumn fx:id="value" prefWidth="143.33338165283203" text="数据" />
+                  <TableColumn fx:id="sortedValue" minWidth="7.33331298828125" prefWidth="155.99998474121094" text="排序值" />
+              </columns>
+            </TableView>
+            <VBox prefHeight="523.0" prefWidth="373.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#refresh" prefHeight="156.0" prefWidth="119.0" style="-fx-background-color: 0;" text="智能分词AI" />
+                  <TextArea fx:id="output" prefHeight="443.0" prefWidth="371.0" promptText="暂无输出">
+                     <font>
+                        <Font size="17.0" />
+                     </font></TextArea>
+                  <TextArea fx:id="input" prefHeight="255.0" prefWidth="371.0" promptText="按Ctrl+Enter发送">
+                     <font>
+                        <Font size="18.0" />
+                     </font></TextArea>
+               </children>
+            </VBox>
+         </children></HBox>
    </children>
 </VBox>

@@ -73,6 +73,11 @@
             <artifactId>langchain4j-ollama</artifactId>
             <version>1.15.0</version>   <!-- 最新稳定版 -->
         </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.4.14</version>
+        </dependency>
     </dependencies>
 
     <build>

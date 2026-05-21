@@ -1,15 +1,18 @@
 package com.ruoyi.statistics_computer;
 
 import com.ruoyi.statistics_computer.Util.AlertUtil;
+import com.ruoyi.statistics_computer.Util.OllamaService;
 import com.ruoyi.statistics_computer.entity.Sample;
 import com.ruoyi.statistics_computer.instance.DataModel;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
 import javafx.util.converter.DoubleStringConverter;
 
 import java.util.ArrayList;
@@ -41,6 +44,10 @@ public class SampleController extends BaseController {
     TableColumn<Sample, Integer> sortedValue;
 
     @FXML
+    private TextArea input;
+    @FXML
+    private TextArea output;
+    @FXML
     private void initialize() {
         //初始化分隔符下拉列表
         separatorComboBox.getItems().addAll("空格", ",", "|", "#", "无");
@@ -51,6 +58,7 @@ public class SampleController extends BaseController {
             int index = table.getItems().indexOf(cellData.getValue()) + 1;
             return new SimpleIntegerProperty(index).asObject();
         });
+        output.setEditable(false);
         //数据绑定
         value.setCellValueFactory(cellData -> cellData.getValue().ValueProperty().asObject());
         sortedValue.setCellValueFactory(cellData -> cellData.getValue().sortedValueProperty().asObject());
@@ -61,6 +69,13 @@ public class SampleController extends BaseController {
             Sample row = event.getRowValue();
             row.setValue(event.getNewValue());
             refreshSortedValues();
+        });
+        input.setOnKeyPressed(event -> {
+            if(event.isShortcutDown() && event.getCode() == KeyCode.ENTER){
+                call();
+                input.clear();
+                event.consume();
+            }
         });
         //数据绑定列表
         table.setItems(dataList);
@@ -79,6 +94,16 @@ public class SampleController extends BaseController {
         }
     }
 
+    @FXML
+    private void saveDatafromOutput(){
+        String text = output.getText();
+        if(text.isEmpty() || !text.matches("-?\\d+(?:\\.\\d+)?(?:,-?\\d+(?:\\.\\d+)?)*")){
+            AlertUtil.Warning("本次输入无有效数据！");
+        }
+        saveData(text,",");
+        output.clear();
+        output.setPromptText("本次输出成功保存到样本数据中！");
+    }
     /**
      * 保存输入数据
      */
@@ -88,9 +113,13 @@ public class SampleController extends BaseController {
             AlertUtil.Warning("输入不能为空！");
             return;
         }
-
-        String data = inputTextarea.getText();
-        String separator = separatorComboBox.getValue();
+        saveData(inputTextarea.getText().trim(),separatorComboBox.getValue());
+    }
+    private void saveData(String data,String separator) {
+        if (data.trim().isEmpty()) {
+            AlertUtil.Warning("输入不能为空！");
+            return;
+        }
         try {
             //需检验是否是一个数据
             if (separator == null || separator.equals("无")) {
@@ -118,8 +147,30 @@ public class SampleController extends BaseController {
             AlertUtil.Warning("数据格式错误，请检查输入");
         }
     }
+
     @FXML
     private void backData() {
+    }
+    @FXML
+    private void refresh(){
+
+    }
+
+    private void call(){
+        String s = input.getText();
+        if(s.isEmpty()){
+            AlertUtil.Warning("输入不为空");
+        }
+        input.setEditable(false);
+        output.clear();
+        output.setText("正在思考中。。。耐心等待！");
+        Task<String> task = OllamaService.getInstance().generateAsync(s);
+        task.setOnSucceeded(e -> {
+            output.setText(task.getValue());
+            input.setEditable(true);
+        });
+        new Thread(task).start();
+
     }
 
 }
